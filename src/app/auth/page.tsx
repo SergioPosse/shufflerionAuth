@@ -10,9 +10,10 @@ export default function Callback() {
   const [sessionId, setSessionId] = useState<string | undefined>(undefined);
   const [guestEmail, setGuestEmail] = useState<string | undefined>(undefined);
   const [isReady, setIsReady] = useState(false);
+  const [success, setSuccess] = useState<boolean | null>(null);
+
 
   useEffect(() => {
-    // Recuperamos las cookies que guardamos previamente
     const sessionIdFromCookie = Cookies.get("sessionId");
     const guestEmailFromCookie = Cookies.get("guestEmail");
 
@@ -22,38 +23,42 @@ export default function Callback() {
     if (guestEmailFromCookie) {
       setGuestEmail(guestEmailFromCookie);
     }
-  }, []); // Este useEffect se ejecuta solo una vez, cuando el componente se monta
+  }, []);
 
   useEffect(() => {
     if (sessionId && guestEmail) {
-      setIsReady(true); // Marcamos como listo cuando sessionId y guestEmail están disponibles
+      setIsReady(true);
     }
   }, [sessionId, guestEmail]);
 
   useEffect(() => {
     if (isReady && code) {
-      console.log(sessionId);
-      console.log(guestEmail);
       axios
         .post(
           "/api/auth",
           { code, sessionId, guestEmail },
           {
             headers: {
-              "Content-Type": "application/json", // Especificar el tipo de contenido como JSON
+              "Content-Type": "application/json",
             },
           }
         )
         .then(() => {
           console.log("Éxito promise");
-          // router.push("/success");
+          setSuccess(true)
         })
         .catch((err: Error) => {
           console.log("Error promise", err);
-          // router.push("/error");
+          setSuccess(false)
+
         });
     }
   }, [isReady, code, sessionId, guestEmail]);
-
-  return <p>Procesando autenticación...</p>;
+  return (
+    <div>
+      {success === null && <p>Procesando autenticación...</p>}
+      {success === true && <div>✅ ¡Éxito!</div>}
+      {success === false && <div>❌ Error autenticando</div>}
+    </div>
+  );
 }
