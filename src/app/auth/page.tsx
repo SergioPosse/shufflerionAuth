@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import Cookies from "js-cookie"; // Importamos js-cookie para manejar cookies
+import { LocalState } from "../localState.ts/localState";
+import { Loader } from "../Loader";
 
 export default function Callback() {
   const searchParams = useSearchParams();
@@ -12,16 +13,14 @@ export default function Callback() {
   const [isReady, setIsReady] = useState(false);
   const [success, setSuccess] = useState<boolean | null>(null);
 
-
   useEffect(() => {
-    const sessionIdFromCookie = Cookies.get("sessionId");
-    const guestEmailFromCookie = Cookies.get("guestEmail");
+    const session = LocalState.getSession();
 
-    if (sessionIdFromCookie) {
-      setSessionId(sessionIdFromCookie);
+    if (session.sessionId) {
+      setSessionId(session.sessionId);
     }
-    if (guestEmailFromCookie) {
-      setGuestEmail(guestEmailFromCookie);
+    if (session.guestEmail) {
+      setGuestEmail(session.guestEmail);
     }
   }, []);
 
@@ -32,33 +31,39 @@ export default function Callback() {
   }, [sessionId, guestEmail]);
 
   useEffect(() => {
-    if (isReady && code) {
-      axios
-        .post(
-          "/api/auth",
-          { code, sessionId, guestEmail },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then(() => {
-          console.log("Éxito promise");
-          setSuccess(true)
-        })
-        .catch((err: Error) => {
-          console.log("Error promise", err);
-          setSuccess(false)
-
-        });
-    }
+    setTimeout(() => {
+      if (isReady && code) {
+        axios
+          .post(
+            "/api/auth",
+            { code, sessionId, guestEmail },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then(() => {
+            console.log("Éxito promise");
+            setSuccess(true);
+          })
+          .catch((err: Error) => {
+            console.log("Error promise", err);
+            setSuccess(false);
+          });
+      }
+    }, 4000)
   }, [isReady, code, sessionId, guestEmail]);
   return (
-    <div>
-      {success === null && <p>Procesando autenticación...</p>}
-      {success === true && <div>✅ ¡Éxito!</div>}
-      {success === false && <div>❌ Error autenticando</div>}
-    </div>
+    <Loader
+      active={success === null ? true : false}
+      renderDescription={() => (
+        <div>
+          {success === null && <p>Procesando autenticación...</p>}
+          {success === true && <div>✅ ¡Éxito!</div>}
+          {success === false && <div>❌ Error autenticando</div>}
+        </div>
+      )}
+    />
   );
 }
