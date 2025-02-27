@@ -37,22 +37,40 @@ export default function Callback() {
           .post(
             "/api/auth",
             { code, sessionId, guestEmail },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
+            { headers: { "Content-Type": "application/json" } }
           )
+          .then((res) => {
+            console.log("Éxito obteniendo token:", res.data);
+            const { access_token, refresh_token } = res.data;
+
+            if (!access_token || !refresh_token) {
+              throw new Error("No se recibieron tokens de Spotify");
+            }
+
+            return axios.put(
+              "/api/session",
+              {
+                accessToken: access_token,
+                refreshToken: refresh_token,
+                sessionId,
+                guestEmail,
+              },
+              { headers: { "Content-Type": "application/json" } }
+            );
+          })
           .then(() => {
-            console.log("Éxito promise");
+            console.log("Éxito actualizando sesión");
             setSuccess(true);
           })
           .catch((err: Error) => {
-            console.log("Error promise", err);
+            console.error(
+              "Error en autenticación o actualización de sesión",
+              err
+            );
             setSuccess(false);
           });
       }
-    }, 4000)
+    }, 4000);
   }, [isReady, code, sessionId, guestEmail]);
   return (
     <Loader

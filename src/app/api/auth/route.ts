@@ -18,11 +18,11 @@ export async function POST(req: NextRequest) {
       client_secret: process.env.SPOTIFY_CLIENT_SECRET!,
     }));
 
-    const { access_token } = response.data;
+    const { access_token, refresh_token } = response.data;
 
-    console.log("data saved mock:", { access_token, sessionId, guestEmail });
+    console.log("data saved mock:", { access_token, sessionId, guestEmail, refresh_token });
 
-    return NextResponse.json({ message: "Access token saved" }, { status: 200 });
+    return NextResponse.json({ access_token, sessionId, guestEmail, refresh_token }, { status: 200 });
   } catch (error) {
     console.error("Error al obtener token de Spotify:", error);
     return NextResponse.json({ error: "Error fetching access token" }, { status: 500 });

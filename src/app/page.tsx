@@ -14,26 +14,27 @@ export default function Home() {
 
   useEffect(() => {
     if (sessionIdFromParam && guestEmailFromParam) {
-      LocalState.setSession({sessionId: sessionIdFromParam, guestEmail: guestEmailFromParam})
+      LocalState.setSession({
+        sessionId: sessionIdFromParam,
+        guestEmail: guestEmailFromParam,
+      });
     }
-
   }, [sessionIdFromParam, guestEmailFromParam]);
 
   useEffect(() => {
-    const session = LocalState.getSession()
+    const session = LocalState.getSession();
 
     if (session.sessionId && session.guestEmail) {
       setTimeout(() => {
-        const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=user-read-private user-read-email`;
+        const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(
+          REDIRECT_URI
+        )}&scope=user-library-read streaming user-read-playback-state user-modify-playback-state user-read-currently-playing user-read-private user-read-playback-position user-read-email`;
         window.location.href = authUrl;
-      },3000)
+      }, 3000);
     }
   }, []);
 
-  const HomeBody: ReactNode = <div>Redirigiendo a Spotify...</div>
+  const HomeBody: ReactNode = <div>Redirigiendo a Spotify...</div>;
 
-  return (
-    <Loader active={true} renderDescription={() => HomeBody}/>
-  );
+  return <Loader active={true} renderDescription={() => HomeBody} />;
 }
-
