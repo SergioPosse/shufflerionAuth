@@ -3,6 +3,7 @@ import axios from "axios";
 
 export async function PUT(req: NextRequest) {
   try {
+    const SESSION_UPDATE_URL = process.env.SHUFFLERION_BACKEND_SESSION_UPDATE_URL!
     const body = await req.json();
     const { accessToken, refreshToken, sessionId, guestEmail } = body;
 
@@ -22,7 +23,7 @@ export async function PUT(req: NextRequest) {
     };
 
     const response = await axios.put(
-      "https://shufflerionserver.onrender.com/session/update",
+      SESSION_UPDATE_URL,
       requestData,
       {
         headers: {
