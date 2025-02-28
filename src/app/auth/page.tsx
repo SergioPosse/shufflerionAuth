@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { ReactNode, Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { LocalState } from "../localState.ts/localState";
 import Loader from "../Loader";
 
-export default function Callback() {
+function CallbackContent() {
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
   const [sessionId, setSessionId] = useState<string | undefined>(undefined);
@@ -72,9 +72,10 @@ export default function Callback() {
       }
     }, 4000);
   }, [isReady, code, sessionId, guestEmail]);
+
   return (
     <Loader
-      active={success === null ? true : false}
+      active={success === null}
       renderDescription={() => (
         <div>
           {success === null && <p>Procesando autenticación...</p>}
@@ -85,3 +86,14 @@ export default function Callback() {
     />
   );
 }
+
+export default function Callback() {
+  const LoaderDescription: ReactNode = <div>Procesando autenticación</div>;
+
+  return (
+    <Suspense fallback={<Loader active={true} renderDescription={() => LoaderDescription}/>}>
+      <CallbackContent />
+    </Suspense>
+  );
+}
+

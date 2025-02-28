@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { LocalState } from "./localState.ts/localState";
 import Loader from "./Loader";
@@ -9,7 +9,9 @@ const REDIRECT_URI = process.env.NEXT_PUBLIC_SPOTIFY_AUTH_REDIRECT_URI!;
 const AUTH_DOMAIN = process.env.NEXT_PUBLIC_SPOTIFY_AUTH_DOMAIN!;
 const AUTH_SCOPE = process.env.NEXT_PUBLIC_SPOTIFY_AUTH_SCOPE!;
 
-export default function Home() {
+const HomeBody: ReactNode = <div>Redirigiendo a Spotify...</div>;
+
+function HomeContent() {
   const searchParams = useSearchParams();
   const sessionIdFromParam = searchParams.get("sessionId");
   const guestEmailFromParam = searchParams.get("guestEmail");
@@ -36,7 +38,14 @@ export default function Home() {
     }
   }, []);
 
-  const HomeBody: ReactNode = <div>Redirigiendo a Spotify...</div>;
 
   return <Loader active={true} renderDescription={() => HomeBody} />;
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<Loader active={true} renderDescription={() => HomeBody}/>}>
+      <HomeContent />
+    </Suspense>
+  );
 }
