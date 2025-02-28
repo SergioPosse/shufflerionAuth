@@ -2,7 +2,7 @@
 import { ReactNode, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { LocalState } from "./localState.ts/localState";
-import { Loader } from "./Loader";
+import Loader from "./Loader";
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID!;
 const REDIRECT_URI = process.env.NEXT_PUBLIC_SPOTIFY_AUTH_REDIRECT_URI!;

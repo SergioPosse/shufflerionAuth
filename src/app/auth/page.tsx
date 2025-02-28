@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { LocalState } from "../localState.ts/localState";
-import { Loader } from "../Loader";
+import Loader from "../Loader";
 
 export default function Callback() {
   const searchParams = useSearchParams();

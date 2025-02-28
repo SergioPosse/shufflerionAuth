@@ -6,7 +6,7 @@ interface LoaderProps {
   active: boolean;
 }
 
-export const Loader = ({ renderDescription, active }: LoaderProps) => {
+export default function Loader ({ renderDescription, active }: LoaderProps) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md z-50 transition-opacity">
       <div className="flex flex-col items-center justify-center w-80 h-40 bg-white rounded-lg shadow-2xl gap-6 p-6">
